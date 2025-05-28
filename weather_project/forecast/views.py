@@ -1,5 +1,6 @@
 from django.shortcuts import render
 
+
 # Create your views here.
 import requests
 import numpy as np
@@ -121,7 +122,7 @@ def load_model(feature):
                 model_hum = joblib.load(model_path_hum)
                 model.append(model_hum)
         case 'rain':
-            model_path_rain = os.path.join(model_dir, "model_rain.pkl")
+            model_path_rain = os.path.join(model_dir, "new_model_rain.pkl")
             model = joblib.load(model_path_rain)
             print(model_path_rain)
     return model
@@ -224,3 +225,7 @@ def weather_view(request):
 
         return render(request,'weather.html',context)
     return render(request, 'weather.html') 
+def index(request):
+    return render(request,'index.html')
+def map_view(request):
+    return render(request,'map.html')
