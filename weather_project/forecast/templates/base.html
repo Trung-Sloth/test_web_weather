@@ -46,8 +46,14 @@
                         </a>
                     </li>
                     <li class="nav-link">
-                        <a href="{% url 'map' %}">
+                        <a href="#" class="ajax-link" data-url="{% url 'map' %}">
                             <i class='bx  bx-map icon'></i>
+                            <span class="text nav-text">Map</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="#" class="ajax-link" data-url="{% url 'dashboard' %}">
+                            <i class='bx  bx-light-bulb-on icon'  ></i> 
                             <span class="text nav-text">Map</span>
                         </a>
                     </li>
@@ -72,7 +78,7 @@
     <!-- <section class="home">
         <div class="text">Dashboard</div>
     </section> -->
-    <section class="home">
+    <section class="home" id="main-content">
         {% block content %}
         {% endblock %}
     </section>

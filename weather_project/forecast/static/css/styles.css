@@ -312,7 +312,7 @@ body.dark .switch::before{
 
 main {
     position: absolute;
-    display: none;
+    display: flex;
     justify-content: space-between;
     align-items: flex-end;
     margin: 0 auto;
@@ -611,23 +611,6 @@ main.clear {
 }
 
 
-/* #toggleBtn {
-    position: fixed;
-    top: 8%;
-    right: 18%;
-    padding: 8px 16px;
-    background-color: #28a745;
-    z-index: 1;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-#toggleBtn:active {
-    opacity: 0.5;
-} */
-
 #confirmBtn {
     display: block;
     position: fixed;
@@ -716,34 +699,8 @@ main.clear {
     background-image: url('https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png');
 }
 
-#startimage {
-    position: absolute;
-    display: none;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin: 0 auto;
-    width: 1125px;
-    height: 630px;
-
-    background-repeat: no-repeat;
-    background-size: cover;
-
-    border-radius: 16px;
-    overflow: hidden;
-    background-image: url('../img/Start_image.png');
-}
 
 .custom-popup {
     height: auto;
     width: auto;
-    /* font-size: 13px; */
-    /* background-color: #f0f8ff;     
-  border: 2px solid #3399ff;   
-  border-radius: 8px;         
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  font-family: Arial, sans-serif; 
-  font-size: 14px; 
-  color: #333333;       
-  padding: 10px;          
-  width: 200px;  */
 }
