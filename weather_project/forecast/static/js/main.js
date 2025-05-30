@@ -171,9 +171,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   deleteBtn.addEventListener('click', () => {
     n = 0;
-    // map.removeLayer(lastMarker1);
-    // map.removeLayer(lastMarker2);
-    // map.removeLayer(lastMarker3);
+    map.removeLayer(lastMarker1);
+    map.removeLayer(lastMarker2);
+    map.removeLayer(lastMarker3);
     map.removeLayer(currentMarker1);
     map.removeLayer(currentMarker2);
     map.removeLayer(currentMarker3);
