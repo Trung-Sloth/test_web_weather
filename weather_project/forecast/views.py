@@ -23,6 +23,7 @@ BASE_URL='https://api.openweathermap.org/data/2.5/' #base URL for making API req
 
 firebaseURL="https://bme680-1-63c67-default-rtdb.asia-southeast1.firebasedatabase.app/bme680/latest.json"
 locationURL="https://map-1-b0eae-default-rtdb.asia-southeast1.firebasedatabase.app/Toa-do-hien-tai.json"
+aqiURL="https://bme680-1-63c67-default-rtdb.asia-southeast1.firebasedatabase.app/pm25/latest.json"
 model_dir = r"weather_project\forecast\Model_weather\Model_weather"
 
 
@@ -105,7 +106,14 @@ def get_location():
     lng_cur=round(float(data['lng_cur']),2)
 
     return lat_cur, lng_cur
+def get_aqi_data():
+    reponse=requests.get(aqiURL)
+    data = reponse.json()
+    aqi=float(data['AQI'])
+    pm25=float(data['PM2_5'])
+    status=data['Status']
 
+    return aqi, pm25, status
 
 #2. Load model 
 def load_model(feature):
@@ -140,6 +148,7 @@ def predict_future(model_predict,current_value):
 
 def weather_view(request):
     if request.method=='POST':
+        n = int(request.POST.get('n', 0))
         city='Thu Duc'
         country='Viet Nam'
         input_para=get_input_data_from_sensors()
@@ -183,6 +192,8 @@ def weather_view(request):
 
         # longitude and latitude
         latitude, longitude=get_location()
+        # Get AQI data
+        aqi, pm25, status = get_aqi_data()
         # Pass data to template
 
         context={
@@ -197,6 +208,9 @@ def weather_view(request):
 
             'longitude':longitude,
             'latitude':latitude,
+            'aqi': aqi,
+            'pm25': pm25,
+            'status': status,
 
             # 'time': datetime.now(),
             'time': time_now,
@@ -223,20 +237,19 @@ def weather_view(request):
             'hum5':hum5,
             
         }
-
-        return render(request,'weather.html',context)
+        return render(request, 'weather.html', context)
     return render(request, 'weather.html') 
 def index(request):
     return render(request,'index.html')
-# def map_view(request):
-#     return render(request,'map.html')
+def map_view(request):
+    return render(request,'map.html')
 def dashboard(request):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         html = render_to_string('dashboard.html', request=request)
         return JsonResponse({'html': html})
     return render(request, 'base.html')
-def map_view(request):
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        html = render_to_string('map.html', request=request)
-        return JsonResponse({'html': html})
-    return render(request, 'base.html')
+# def map_view(request):
+#     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+#         html = render_to_string('map.html', request=request)
+#         return JsonResponse({'html': html})
+#     return render(request, 'base.html')

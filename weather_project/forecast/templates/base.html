@@ -10,11 +10,11 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
     <link href='https://cdn.boxicons.com/fonts/basic/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <title>Weather View</title>
+    <title>{% block title %}Weather{% endblock %}</title>
 
 </head>
 
-<body>
+<body class="dark">
     <nav class="sidebar close">
         <header>
             <div class="image-text">
@@ -36,7 +36,7 @@
                     <li class="nav-link">
                         <a href="{% url 'index' %}">
                             <i class='bx  bx-home-alt-2 icon'></i>
-                            <span class="text nav-text">Dashboard</span>
+                            <span class="text nav-text">Home</span>
                         </a>
                     </li>
                     <li class="nav-link">
@@ -46,7 +46,7 @@
                         </a>
                     </li>
                     <li class="nav-link">
-                        <a href="#" class="ajax-link" data-url="{% url 'map' %}">
+                        <a href="{% url 'map' %}">
                             <i class='bx  bx-map icon'></i>
                             <span class="text nav-text">Map</span>
                         </a>
@@ -54,7 +54,7 @@
                     <li class="nav-link">
                         <a href="#" class="ajax-link" data-url="{% url 'dashboard' %}">
                             <i class='bx  bx-light-bulb-on icon'  ></i> 
-                            <span class="text nav-text">Map</span>
+                            <span class="text nav-text">Dashboard</span>
                         </a>
                     </li>
                 </ul>

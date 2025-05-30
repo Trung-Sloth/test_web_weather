@@ -1,30 +1,21 @@
 {% extends 'base.html' %}
+{% block title %}Weather View{% endblock %}
 {% block content %}
 {% load static %}
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    {% load static %}
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.12.1/font/bootstrap-icons.min.css">
-    <link rel="icon" href="{% static 'img/site-pic.ico' %}" type="image/icon type"/>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" /> 
-    <title>Weather Forecast</title>
-</head>
-<body> -->
-
-  <main id="main" class="{{ description }}">
+<div class="text">Weather View</div>
+<main id="main" class="{{ description }}">
     <section class="side-container">
-        <form id="myform" method="POST">
+        <!-- <form id="myform" method="POST">
             {% csrf_token %}
             <button type="submit" style="display: none;" id="submit_button">
-                <!-- <div style="width: 25px;height: 25px;color: white;">
+                <div style="width: 25px;height: 25px;color: white;">
                     <i class="bi bi-skip-start-fill" style="font-size: 40px;"></i>
-                </div> -->
+                </div>
             </button>
-
+        </form> -->
+        <form id="weatherForm" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="n" id="nInput">
         </form>
         <div class="day-stats">
             <h2 class="day-stats__temperature">
@@ -33,36 +24,69 @@
             <ul class="day-stats_conditions">
                 <li>
                     <p class="day-stats_condition">
-                        Humidity:&nbsp&nbsp<span class="day-stats__humidity">{{ humidity }}</span> %
+                        <b>Humidity:</b>&nbsp;&nbsp;<span class="day-stats__humidity">{{ humidity }}</span> %
                     </p>
                 </li>
                 <li>
                     <p class="day-stats_condition">
-                        Pressure:&nbsp&nbsp <span class="day-stats__pressure">{{ pressure }}</span> mb 
+                        <b>Pressure:</b>&nbsp;&nbsp; <span class="day-stats__pressure">{{ pressure }}</span> mb
                     </p>
                 </li>
+            </ul>
+            <ul class="air-quality">
+                <li>
+                    <p class="aqi">
+                        <b>AQI:</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="aqi_value">{{ aqi }}</span>
+                    </p>
+                </li>
+                <li>
+                    <p class="pm25">
+                        <b>PM2.5:</b>&nbsp;&nbsp;<span class="pm25_value">{{ pm25 }}</span>
+                    </p>
+                </li>
+                <li>
+                    <p class="status">
+                        <b>Status:</b>&nbsp;<span class="status_str">{{ status }}</span>
+                        <span class="status_emoji">
+                        {% if status == "Tốt" %}
+                        &#129392;
+                        {% elif status == "Vừa phải" %}
+                        &#128578;
+                        {% elif status == "Không tốt cho người nhạy cảm" %}
+                        &#129319;
+                        {% elif status == "Không tốt cho sức khỏe" %}
+                        &#129314;
+                        {% elif status == "Rất không tốt cho sức khỏe" %}
+                        &#128545;
+                        {% elif status == "Nguy hiểm" %}
+                        &#128128;
+                        {% else %}
+                        &#10067;
+                        {% endif %}
+                    </span>
+                </li>
+                    </p>
             </ul>
             <ul class="geographical-coordinates">
                 <li>
                     <p class="longitude">
-                        Longitude:&nbsp&nbsp<span class="longitude_value">{{ longitude }}</span> 
+                        <b>Longitude:</b>&nbsp;&nbsp;<span class="longitude_value">{{ longitude }}</span>
                     </p>
                 </li>
                 <li>
                     <p class="latitude">
-                        Latitude: &nbsp&nbsp&nbsp <span class="latitude_value">{{ latitude }}</span>  
+                        <b>Latitude:</b> &nbsp;&nbsp;&nbsp; <span class="latitude_value">{{ latitude }}</span>
                     </p>
                 </li>
             </ul>
         </div>
-        <img src="{% static 'img/side-blur.png' %}" class="side-blur" alt="blur"/>
+        <img src="{% static 'img/side-blur.png' %}" class="side-blur" alt="blur" />
     </section>
 
     <section class="main-container">
         <h1 class="secondary-title">Weather Forecast</h1>
-        {% comment %} <h4 class="weather__primary-title">{{  description }}</h4> {% endcomment %}
         <div class="weather__location">
-            <div style="width: 25px;height: 25px;color: white;" class="location-icon">
+            <div style="width: 20px;height: 20px;color: white;" class="location-icon">
                 <i class="bi bi-geo-alt-fill"></i>
             </div>
             <p class="weather__location-text">
@@ -74,7 +98,7 @@
         <p class="weather__primary-stats">
             Rain Tomorrow:&nbsp;
             <span class="Rainprediction">{{ rainfall }}</span>%
-        </p>    
+        </p>
         <ul class="forecast">
             <li class="forecast-item">
                 <p class="forecast-time">{{ time1 }}</p>
@@ -122,48 +146,15 @@
                 </p>
             </li>
         </ul>
-        
-        <canvas id="chart-temperature" height="70px"></canvas>
-        <canvas id="chart-humidity" height="100px"></canvas>
-        
+
+        <canvas id="chart-temperature" height="100px"></canvas>
+        <canvas id="chart-humidity" height="250px"></canvas>
+
     </section>
-  </main>
-  <!-- <div id="startimage"></div> -->
-   <!--  -->
-    <!-- <button id="toggleBtn">Hide map</button>
-    <button id="confirmBtn"><b>Confirm</b></button>
-    <button id="deleteBtn"><b>Delete</b></button>
+</main>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
-    <div id="map"></div>
-
-    <p id="status1"></p>
-    <p id="status2"></p>
-    <p id="status3"></p>
-
-    <div id="map-pin">
-        <div id="pin-item-1">
-            <div id="pin-color-red" class="red-marker"></div>
-            <span><b>Tọa độ 1</b></span>
-        </div>
-        <div id="pin-item-2">
-            <div id="pin-color-green" class="green-marker"></div>
-            <span><b>Tọa độ 2</b></span> 
-        </div>
-        <div id="pin-item-3">
-            <div id="pin-color-blue" class="blue-marker"></div>
-            <span><b>Tọa độ 3</b></span>
-        </div>
-    </div> -->
-    
-
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-     <!-- -->
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script type="module" src="{% static 'js/chartSetup.js' %}"></script>
-  <script type="module" src="{% static 'js/main.js' %}"></script> <!--them vao -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script type="module" src="{% static 'js/chartSetup.js' %}"></script>
 {% endblock %}
-<!-- </body>
-</html> -->

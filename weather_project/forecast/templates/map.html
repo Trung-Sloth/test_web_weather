@@ -1,5 +1,6 @@
-<!-- {% extends 'base.html' %}
-{% block content %} -->
+{% extends 'base.html' %}
+{% block title %}Map View{% endblock %}
+{% block content %}
 {% load static %}
 <div class="text">Bản đồ</div>
 <button id="confirmBtn"><b>Confirm</b></button>
@@ -26,4 +27,4 @@
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script type="module" src="{% static 'js/main.js' %}"></script>
 
-<!-- {% endblock %} -->
+{% endblock %}
