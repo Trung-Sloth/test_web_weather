@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let prevFirebaseMarker = null;
   const uavIcon = new L.Icon({  // UAV icon
     iconUrl: 'http://getdrawings.com/free-icon/uav-icon-62.png',
-    iconSize: [50, 50],
+    iconSize: [60, 60],
     iconAnchor: [25, 25],
     popupAnchor: [0, -20],
     shadowSize: [41, 41]
@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         // UAV icon
         map.removeLayer(firebaseMarker);
-        uavIcon.options.iconSize = [50 * markerRatio, 50 * markerRatio];
+        uavIcon.options.iconSize = [60 * markerRatio, 60 * markerRatio];
         uavIcon.options.iconAnchor = [25 * markerRatio, 25 * markerRatio];
         firebaseMarker = L.marker([lat, lng], { icon: uavIcon })
           .addTo(map)
