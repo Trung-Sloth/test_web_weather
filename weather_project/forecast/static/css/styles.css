@@ -696,8 +696,11 @@ main.clear {
     background-image: url('https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png');
 }
 
-
 .custom-popup {
     height: auto;
     width: auto;
+}
+
+.info:hover {
+    filter: invert(0.8);
 }

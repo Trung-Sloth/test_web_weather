@@ -148,7 +148,7 @@ def predict_future(model_predict,current_value):
 
 def weather_view(request):
     if request.method=='POST':
-        n = int(request.POST.get('n', 0))
+        markerTurn = int(request.POST.get('markerTurn', 0))
         city='Thu Duc'
         country='Viet Nam'
         input_para=get_input_data_from_sensors()

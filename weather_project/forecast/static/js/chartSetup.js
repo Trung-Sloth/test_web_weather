@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const db = firebase.database();
 
     let triggered = false;
-    db.ref("n").on("value", (snapshot) => {
+    db.ref("markerTurn").on("value", (snapshot) => {
         const current_value = snapshot.val();
         console.log(current_value);
         if ((current_value === 0)) {
@@ -23,8 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('nInput').value = 1;
             document.getElementById('weatherForm').submit();
 
-            db.ref("n").set(0).then(() => {
-                console.log("Reset n to 0");
+            db.ref("markerTurn").set(0).then(() => {
+                console.log("Reset markerTurn to 0");
                 triggered = false; 
             });
         }

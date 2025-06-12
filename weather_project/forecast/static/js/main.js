@@ -53,9 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
   var ref1 = db.ref("Toa-do-1");
   var ref2 = db.ref("Toa-do-2");
   var ref3 = db.ref("Toa-do-3");
-  let currentMarker1 = null, currentMarker2 = null, currentMarker3 = null;
-  var x1 = 0, x2 = 0, x3 = 0;
-  var y1 = 0, y2 = 0, y3 = 0;
+  var takeOff = 0;
   // Initialize the map with a marker
   let lastMarker1 = null, lastMarker2 = null, lastMarker3 = null;
   var markerTurn = 0;
@@ -64,22 +62,21 @@ document.addEventListener('DOMContentLoaded', () => {
     ref1.on("value", (snapshot) => {
       lastLat1 = parseFloat(snapshot.val().lat);
       lastLng1 = parseFloat(snapshot.val().lng);
-      console.log("Toa-do-1: " + lastLat1 + ", " + lastLng1);
+      // console.log("Toa-do-1: " + lastLat1 + ", " + lastLng1);
       lastMarker1 = L.marker([lastLat1, lastLng1], { icon: redIcon }).addTo(map);
-      // console.log("Map loaded");
       createPersistentPopup(lastMarker1, `<div>Lat1=${lastLat1}<br>Lng1=${lastLng1}<br></div>`);
     });
     ref2.on("value", (snapshot) => {
       lastLat2 = parseFloat(snapshot.val().lat);
       lastLng2 = parseFloat(snapshot.val().lng);
-      console.log("Toa-do-2: " + lastLat2 + ", " + lastLng2);
+      // console.log("Toa-do-2: " + lastLat2 + ", " + lastLng2);
       lastMarker2 = L.marker([lastLat2, lastLng2], { icon: greenIcon }).addTo(map);
       createPersistentPopup(lastMarker2, `<div>Lat2=${lastLat2}<br>Lng2=${lastLng2}<br></div>`);
     });
     ref3.on("value", (snapshot) => {
       lastLat3 = parseFloat(snapshot.val().lat);
       lastLng3 = parseFloat(snapshot.val().lng);
-      console.log("Toa-do-3: " + lastLat3 + ", " + lastLng3);
+      // console.log("Toa-do-3: " + lastLat3 + ", " + lastLng3);
       lastMarker3 = L.marker([lastLat3, lastLng3], { icon: blueIcon }).addTo(map);
       createPersistentPopup(lastMarker3, `<div>Lat3=${lastLat3}<br>Lng3=${lastLng3}<br></div>`);
     });
@@ -90,47 +87,55 @@ document.addEventListener('DOMContentLoaded', () => {
     const data = snapshot.val();
     const lat_x = data.lat_cur;
     const lng_x = data.lng_cur;
-    map.setView([lat_x, lng_x], 20);
+    map.setView([lat_x, lng_x], 19);
   });
 
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', //Satellite map
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', //Map ve tinh
     {
       maxZoom: 19
     }).addTo(map);
-  
-  // Put the Position marker by clicking on the map
+
+  let currentMarker1 = null;
+  let currentMarker2 = null;
+  let currentMarker3 = null;
+  var x1 = 0, x2 = 0, x3 = 0;
+  var y1 = 0, y2 = 0, y3 = 0;
+
   map.on('click', function (e) {
     markerTurn = markerTurn + 1;
-    if (markerTurn % 3 == 1) {  // Marker 1 red
+    if (markerTurn % 3 == 1) {
       map.removeLayer(lastMarker1)
       const lat1 = e.latlng.lat.toFixed(6);
       const lng1 = e.latlng.lng.toFixed(6);
       x1 = lat1;
       y1 = lng1;
+
       if ((markerTurn % 3 == 1) && (markerTurn > 3)) {
         map.removeLayer(currentMarker1);
       }
       currentMarker1 = L.marker([lat1, lng1], { icon: redIcon }).addTo(map);
     }
 
-    if (markerTurn % 3 == 2) {  // Marker 2 green
+    if (markerTurn % 3 == 2) {
       map.removeLayer(lastMarker2);
       const lat2 = e.latlng.lat.toFixed(6);
       const lng2 = e.latlng.lng.toFixed(6);
       x2 = lat2;
       y2 = lng2;
+
       if ((markerTurn % 3 == 2) && (markerTurn > 3)) {
         map.removeLayer(currentMarker2);
       }
       currentMarker2 = L.marker([lat2, lng2], { icon: greenIcon }).addTo(map);
     }
 
-    if (markerTurn % 3 == 0) {  // Marker 3 blue
+    if (markerTurn % 3 == 0) {
       map.removeLayer(lastMarker3);
       const lat3 = e.latlng.lat.toFixed(6);
       const lng3 = e.latlng.lng.toFixed(6);
       x3 = lat3;
       y3 = lng3;
+
       if ((markerTurn % 3 == 0) && (markerTurn > 3)) {
         map.removeLayer(currentMarker3);
       }
@@ -143,7 +148,109 @@ document.addEventListener('DOMContentLoaded', () => {
   const confirmBtn = document.getElementById('confirmBtn');
   const deleteBtn = document.getElementById('deleteBtn');
 
-  // Confirm button to put the position of markers into Firebase
+  // Inform board
+  //// Inform status of UAV
+  db.ref("Toa-do-hien-tai").on("value", (snapshot) => {
+    const data = snapshot.val();
+    const lat = data.lat_cur;
+    const lng = data.lng_cur;
+    if (data && data.n) {
+      const status = data.n;
+      if (status == 1) {  // Status 1: Not flying
+
+      }
+      if (status == 2) { // Status 2: Ready to take off
+        var informBoard;
+        informBoard = Toastify({
+          text: "Click here to take off",
+          className: "info",
+          duration: -1,
+          newWindow: true,
+          close: true,
+          gravity: "top",
+          position: "center",
+          stopOnFocus: true,
+          style: {
+            background: "linear-gradient(to right, #00b09b, #96c93d)",
+          },
+          onClick: function () {
+            takeOff = 1;
+            setTimeout(() => {
+              informBoard.hideToast();
+            }, 1000);
+            map.removeLayer(lastMarker3);
+            db.ref("Toa-do-3").set({
+              lat: parseFloat(x3),
+              lng: parseFloat(y3),
+              takeOff: takeOff
+            });
+            db.ref("Toa-do-hien-tai").set({
+              lat_cur: lat,
+              lng_cur: lng,
+              n: 3,
+            })
+          }
+        }).showToast();
+      }
+      if (status == 10) { // Status 10: Reached point 1
+        Toastify({
+          text: "UAV has reached point 1",
+          duration: 3000,
+          newWindow: true,
+          close: true,
+          gravity: "top",
+          position: "center",
+          stopOnFocus: true,
+          style: {
+            background: "linear-gradient(to right,rgb(176, 18, 0))",
+          },
+        }).showToast();
+      }
+      if (status == 20) { // Status 20: Reached point 2
+        Toastify({
+          text: "UAV has reached point 2",
+          duration: 3000,
+          newWindow: true,
+          close: true,
+          gravity: "top",
+          position: "center",
+          stopOnFocus: true,
+          style: {
+            background: "linear-gradient(to right,rgb(0, 176, 50))",
+          },
+        }).showToast();
+      }
+      if (status == 30) { // Status 30: Reached point 3
+        Toastify({
+          text: " UAV has reached point 3",
+          duration: 3000,
+          newWindow: true,
+          close: true,
+          gravity: "top",
+          position: "center",
+          stopOnFocus: true,
+          style: {
+            background: "linear-gradient(to right,rgb(13, 28, 189))",
+          },
+        }).showToast();
+      }
+      if (status == 40) { // Status 40: Back home
+        Toastify({
+          text: "UAV has reached home",
+          duration: 3000,
+          newWindow: true,
+          close: true,
+          gravity: "top",
+          position: "center",
+          stopOnFocus: true,
+          style: {
+            background: "linear-gradient(to right,rgb(170, 11, 112))",
+          },
+        }).showToast();
+      }
+    }
+  });
+
   confirmBtn.addEventListener('click', () => {
     const popup1 = createPersistentPopup(currentMarker1, `<div>Lat1=${x1}<br>Lng1=${y1}<br></div>`);
     const popup2 = createPersistentPopup(currentMarker2, `<div>Lat2=${x2}<br>Lng2=${y2}<br></div>`);
@@ -152,31 +259,36 @@ document.addEventListener('DOMContentLoaded', () => {
     db.ref("Toa-do-1").set({
       lat: parseFloat(x1),
       lng: parseFloat(y1),
+      takeOff: takeOff,
     })
     db.ref("Toa-do-2").set({
       lat: parseFloat(x2),
       lng: parseFloat(y2),
+      takeOff: takeOff,
     })
     db.ref("Toa-do-3").set({
       lat: parseFloat(x3),
       lng: parseFloat(y3),
+      takeOff: takeOff,
     })
   });
 
-  let firebaseMarker = null;
-  let prevFirebaseMarker = null;
-  const uavIcon = new L.Icon({  // UAV icon
+
+  const uavIcon = new L.Icon({
     iconUrl: 'http://getdrawings.com/free-icon/uav-icon-62.png',
-    iconSize: [60, 60],
+    iconSize: [50, 50],
     iconAnchor: [25, 25],
     popupAnchor: [0, -20],
     shadowSize: [41, 41]
   });
 
-  var prevPos = new L.Icon({  // Previous position marker icon (red dot)
+  let firebaseMarker = null;
+  let prevFirebaseMarker = null;
+
+  var prevPos = new L.Icon({
     iconUrl: 'https://vectorified.com/images/red-dot-icon-8.png',
-    iconSize: [14, 14],
-    iconAnchor: [7, 7],
+    iconSize: [10, 10],
+    iconAnchor: [5, 5],
     popupAnchor: [0, -20],
     shadowSize: [41, 41]
   });
@@ -186,13 +298,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (data && data.lat_cur && data.lng_cur) {
       const lat = data.lat_cur;
       const lng = data.lng_cur;
-
       if (firebaseMarker) {
         map.removeLayer(firebaseMarker);
         // Add previous position marker
         var prevLat = firebaseMarker.getLatLng().lat;
         var prevLng = firebaseMarker.getLatLng().lng;
-
         prevFirebaseMarker = L.marker([prevLat, prevLng], { icon: prevPos })
           .addTo(map)
       }
@@ -213,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         // UAV icon
         map.removeLayer(firebaseMarker);
-        uavIcon.options.iconSize = [60 * markerRatio, 60 * markerRatio];
+        uavIcon.options.iconSize = [50 * markerRatio, 50 * markerRatio];
         uavIcon.options.iconAnchor = [25 * markerRatio, 25 * markerRatio];
         firebaseMarker = L.marker([lat, lng], { icon: uavIcon })
           .addTo(map)
@@ -223,6 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
         map.removeLayer(lastMarker1);     // previous marker
         if (markerTurn != 0) {
           map.removeLayer(currentMarker1);  // current marker
+          console.log("Marker turn: " + markerTurn);
         }
         redIcon.options.iconSize = [25 * markerRatio, 41 * markerRatio];
         redIcon.options.iconAnchor = [12 * markerRatio, 41 * markerRatio];
@@ -263,7 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
   });
-  // Delete button to remove all markers
+
   deleteBtn.addEventListener('click', () => {
     markerTurn = 0;
     map.removeLayer(lastMarker1);
@@ -277,4 +388,3 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('status3').innerText = '';
   });
 });
-
