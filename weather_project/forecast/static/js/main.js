@@ -57,28 +57,39 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize the map with a marker
   let lastMarker1 = null, lastMarker2 = null, lastMarker3 = null;
   var markerTurn = 0;
+  var lastPopupTurn = 0;
 
   map.on('load', function () {
     ref1.on("value", (snapshot) => {
+      lastPopupTurn = lastPopupTurn + 1;
       lastLat1 = parseFloat(snapshot.val().lat);
       lastLng1 = parseFloat(snapshot.val().lng);
       // console.log("Toa-do-1: " + lastLat1 + ", " + lastLng1);
       lastMarker1 = L.marker([lastLat1, lastLng1], { icon: redIcon }).addTo(map);
-      createPersistentPopup(lastMarker1, `<div>Lat1=${lastLat1}<br>Lng1=${lastLng1}<br></div>`);
+      if(lastPopupTurn==1)
+      {
+        createPersistentPopup(lastMarker1, `<div>Lat1 = ${lastLat1}<br>Lng1 = ${lastLng1}<br></div>`);
+      }
     });
     ref2.on("value", (snapshot) => {
       lastLat2 = parseFloat(snapshot.val().lat);
       lastLng2 = parseFloat(snapshot.val().lng);
       // console.log("Toa-do-2: " + lastLat2 + ", " + lastLng2);
       lastMarker2 = L.marker([lastLat2, lastLng2], { icon: greenIcon }).addTo(map);
-      createPersistentPopup(lastMarker2, `<div>Lat2=${lastLat2}<br>Lng2=${lastLng2}<br></div>`);
+      if(lastPopupTurn==1)
+      {
+        createPersistentPopup(lastMarker2, `<div>Lat2 = ${lastLat2}<br>Lng2 = ${lastLng2}<br></div>`);
+      }
     });
     ref3.on("value", (snapshot) => {
       lastLat3 = parseFloat(snapshot.val().lat);
       lastLng3 = parseFloat(snapshot.val().lng);
       // console.log("Toa-do-3: " + lastLat3 + ", " + lastLng3);
       lastMarker3 = L.marker([lastLat3, lastLng3], { icon: blueIcon }).addTo(map);
-      createPersistentPopup(lastMarker3, `<div>Lat3=${lastLat3}<br>Lng3=${lastLng3}<br></div>`);
+      if(lastPopupTurn==1)
+      {
+        createPersistentPopup(lastMarker3, `<div>Lat3 = ${lastLat3}<br>Lng3 = ${lastLng3}<br></div>`);
+      }
     });
 
   });
@@ -184,18 +195,18 @@ document.addEventListener('DOMContentLoaded', () => {
               lng: parseFloat(y3),
               takeOff: takeOff
             });
-            db.ref("Toa-do-hien-tai").set({
-              lat_cur: lat,
-              lng_cur: lng,
-              n: 3,
-            })
+            // db.ref("Toa-do-hien-tai").set({
+            //   lat_cur: lat,
+            //   lng_cur: lng,
+            //   n: 3,
+            // })
           }
         }).showToast();
       }
       if (status == 10) { // Status 10: Reached point 1
         Toastify({
           text: "UAV has reached point 1",
-          duration: 3000,
+          duration: 2000,
           newWindow: true,
           close: true,
           gravity: "top",
@@ -209,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (status == 20) { // Status 20: Reached point 2
         Toastify({
           text: "UAV has reached point 2",
-          duration: 3000,
+          duration: 2000,
           newWindow: true,
           close: true,
           gravity: "top",
@@ -223,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (status == 30) { // Status 30: Reached point 3
         Toastify({
           text: " UAV has reached point 3",
-          duration: 3000,
+          duration: 2000,
           newWindow: true,
           close: true,
           gravity: "top",
@@ -237,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (status == 40) { // Status 40: Back home
         Toastify({
           text: "UAV has reached home",
-          duration: 3000,
+          duration: 2000,
           newWindow: true,
           close: true,
           gravity: "top",
@@ -252,9 +263,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   confirmBtn.addEventListener('click', () => {
-    const popup1 = createPersistentPopup(currentMarker1, `<div>Lat1=${x1}<br>Lng1=${y1}<br></div>`);
-    const popup2 = createPersistentPopup(currentMarker2, `<div>Lat2=${x2}<br>Lng2=${y2}<br></div>`);
-    const popup3 = createPersistentPopup(currentMarker3, `<div>Lat3=${x3}<br>Lng3=${y3}<br></div>`);
+    const popup1 = createPersistentPopup(currentMarker1, `<div>Lat1 = ${x1}<br>Lng1 = ${y1}<br></div>`);
+    const popup2 = createPersistentPopup(currentMarker2, `<div>Lat2 = ${x2}<br>Lng2 = ${y2}<br></div>`);
+    const popup3 = createPersistentPopup(currentMarker3, `<div>Lat3 = ${x3}<br>Lng3 = ${y3}<br></div>`);
 
     db.ref("Toa-do-1").set({
       lat: parseFloat(x1),
@@ -273,7 +284,8 @@ document.addEventListener('DOMContentLoaded', () => {
     })
   });
 
-
+  let firebaseMarker = null;
+  let prevFirebaseMarker = null;
   const uavIcon = new L.Icon({
     iconUrl: 'http://getdrawings.com/free-icon/uav-icon-62.png',
     iconSize: [50, 50],
@@ -282,10 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
     shadowSize: [41, 41]
   });
 
-  let firebaseMarker = null;
-  let prevFirebaseMarker = null;
-
-  var prevPos = new L.Icon({
+  const prevPos = new L.Icon({
     iconUrl: 'https://vectorified.com/images/red-dot-icon-8.png',
     iconSize: [10, 10],
     iconAnchor: [5, 5],

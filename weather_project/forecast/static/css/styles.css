@@ -701,6 +701,7 @@ main.clear {
     width: auto;
 }
 
+/*  */
 .info:hover {
     filter: invert(0.8);
 }
